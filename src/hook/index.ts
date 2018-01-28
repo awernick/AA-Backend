@@ -84,10 +84,10 @@ class GoogleAssistantHook {
           }
 
           const flightNumber = record.val().flightNumber;
-          this.findFlightByNumber(res.locals, flightNumber)
+          this.loadFlight(res.locals, flightNumber)
             .then((flight:any) => {
               const origin = flight.origin.name + " airport";
-              const destination = flight.destination;
+              const destination = flight.destination.name + " airport";
               const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
               const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
 

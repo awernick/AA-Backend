@@ -69,10 +69,10 @@ class GoogleAssistantHook {
                     return app.tell("Sorry, I couldn't find the tag you looked for. Please try again.");
                 }
                 const flightNumber = record.val().flightNumber;
-                this.findFlightByNumber(res.locals, flightNumber)
+                this.loadFlight(res.locals, flightNumber)
                     .then((flight) => {
                     const origin = flight.origin.name + " airport";
-                    const destination = flight.destination;
+                    const destination = flight.destination.name + " airport";
                     const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
                     const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
                     return app
