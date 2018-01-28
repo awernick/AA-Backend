@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var DialogflowApp = require('actions-on-google').DialogflowApp;
+var flightNumberArg = 'flight-number';
+var givenNameArg = 'given-name';
 var GoogleAssistantHook = /** @class */ (function () {
     function GoogleAssistantHook() {
         this.router = express_1.Router();
@@ -29,14 +31,38 @@ var GoogleAssistantHook = /** @class */ (function () {
         });
     };
     GoogleAssistantHook.prototype.createFlightTag = function (app) {
+        var flightNumber = app.getArgument(flightNumberArg);
+        var tag = app.getArgument(givenNameArg);
+        if (!tag || !flightNumber) {
+            return app.tell("Sorry, I couldn't tag your flight. Please try again");
+        }
+        else {
+            // TAGGING CODE HERE
+            return app.tell("Ready! You can now track " + tag + "'s flight!");
+        }
     };
     GoogleAssistantHook.prototype.findFlightTag = function (app) {
+        var flightNumber = app.getArgument(flightNumberArg);
+        var tag = app.getArgument(givenNameArg);
+        if (!tag || !flightNumber) {
+            return app.tell("Sorry, I couldn't find the tag you looked for. Please try again.");
+        }
+        else {
+            // TAGGING CODE HERE
+            return app
+                .tell("Found it! " + tag + "'s flight will arrive on " + date + " at the " + airport + ".");
+        }
     };
     GoogleAssistantHook.prototype.flightArrival = function (app) {
     };
     GoogleAssistantHook.prototype.flightDeparture = function (app) {
     };
     GoogleAssistantHook.prototype.flightInformation = function (app) {
+        var flightNumber = app.getArgument(flightNumberArg);
+        if (flightNumber == null) {
+        }
+        else {
+        }
     };
     return GoogleAssistantHook;
 }());
