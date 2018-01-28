@@ -3,17 +3,17 @@
 // airport.api
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-var http = require("request");
-var config = require("../config");
-var paths = {
+const http = require("request");
+const config = require("../config");
+const paths = {
     index: '/airports',
 };
 function index(req, res) {
-    var options = {
+    const options = {
         url: config.engineUrl + paths.index,
         qs: req.query
     };
-    http.get(options, function (err, response) {
+    http.get(options, (err, response) => {
         if (err) {
             return res.sendStatus(500);
         }

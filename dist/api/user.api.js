@@ -3,19 +3,19 @@
 // user.api
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-var http = require("request");
-var config = require("../config");
-var paths = {
+const http = require("request");
+const config = require("../config");
+const paths = {
     show: '/user',
     create: '/user'
 };
 function show(req, res) {
-    var options = {
+    const options = {
         url: config.engineUrl + paths.show,
         qs: req.query,
         json: true
     };
-    http.get(options, function (err, response) {
+    http.get(options, (err, response) => {
         if (err) {
             return res.sendStatus(500);
         }
@@ -26,12 +26,12 @@ function show(req, res) {
 }
 exports.show = show;
 function create(req, res) {
-    var options = {
+    const options = {
         url: config.engineUrl + paths.create,
         qs: req.query,
         json: true
     };
-    http.post(options, function (err, response) {
+    http.post(options, (err, response) => {
         if (err) {
             return res.sendStatus(500);
         }

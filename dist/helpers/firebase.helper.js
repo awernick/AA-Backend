@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var firebase = require("firebase-admin");
-var serviceAccountKeys = require('../../service-account.json');
+const firebase = require("firebase-admin");
+const serviceAccountKeys = require('../../service-account.json');
 //const config = {
 //  apiKey: "AIzaSyCrfqNNTnd8-iTWv53_zrcPovrUHWwMr54",
 //  authDomain: "aa-assistant-3b704.firebaseapp.com",
@@ -10,14 +10,14 @@ var serviceAccountKeys = require('../../service-account.json');
 //  storageBucket: "aa-assistant-3b704.appspot.com",
 //  messagingSenderId: "115030624423"
 //};
-var config = {
+const config = {
     credential: firebase.credential.cert(serviceAccountKeys),
     databaseURL: "https://aa-assistant-3b704.firebaseio.com",
 };
-var app;
+let app;
 function setup() {
     app = firebase.initializeApp(config);
-    var db = app.database();
+    const db = app.database();
     console.log("Firebase started");
 }
 exports.setup = setup;
@@ -29,9 +29,9 @@ function getInstance() {
 }
 exports.getInstance = getInstance;
 function migrateUser(req, res) {
-    var db = app.database();
-    var user = res.locals.user;
-    var userRef = db.ref('users');
+    const db = app.database();
+    const user = res.locals.user;
+    const userRef = db.ref('users');
     userRef
         .push()
         .set({

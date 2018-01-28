@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
-var UserApi = require("./user.api");
-var FlightApi = require("./flight.api");
-var OrderApi = require("./order.api");
-var ReservationApi = require("./reservation.api");
-var AirportApi = require("./airport.api");
-var ItemsApi = require("./items.api");
-var Api = /** @class */ (function () {
-    function Api() {
+const express_1 = require("express");
+const UserApi = require("./user.api");
+const FlightApi = require("./flight.api");
+const OrderApi = require("./order.api");
+const ReservationApi = require("./reservation.api");
+const AirportApi = require("./airport.api");
+const ItemsApi = require("./items.api");
+class Api {
+    constructor() {
         this.router = express_1.Router();
         this.setup();
     }
-    Api.prototype.setup = function () {
+    setup() {
         // Mock
         //this.router.post('/mock', mockApi.index);
         // Users
@@ -33,7 +33,6 @@ var Api = /** @class */ (function () {
         this.router.get('/orders', OrderApi.index);
         // Items
         this.router.get('/items', ItemsApi.index);
-    };
-    return Api;
-}());
+    }
+}
 exports.Api = Api;
