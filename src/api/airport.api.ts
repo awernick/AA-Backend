@@ -14,13 +14,11 @@ const paths = {
 export function index(req: Request, res: Response) {
   const options = {
     url: config.engineUrl + paths.index,
-    qs: req.query,
+    qs: req.query
   }
 
   http.get(options, (err, response) => {
-    if(err) {
-      return res.sendStatus(500);
-    }
+    if(err) { return res.sendStatus(500); }
     
     return res
       .status(response.statusCode)
