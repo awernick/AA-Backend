@@ -19,7 +19,7 @@ class GoogleAssistantHook {
       const intent = app.getIntent();
 
       switch(intent) {
-        case 'createFligthTag':
+        case 'createFlightTag':
           return this.createFlightTag(app);
         case 'findFlightTag':
           return this.findFlightTag(app);
@@ -64,20 +64,43 @@ class GoogleAssistantHook {
     else {
       // TAGGING CODE HERE
       return app
-        .tell(`Found it! ${tag}'s flight will leave from ${departAirport} at ${departTime} and arrive on ${arrivalDate} at the ${arrivalAirport}.`);
+        .tell('Found it! ${tag}\'s flight will leave from ${departAirport} at ${departTime} and arrive on ${arrivalDate} at the ${arrivalAirport}.');
     }
   }
 
   public flightArrival(app: any) {
+    const flightNumber = app.getArgument(flightNumberArg);
+    if(flightNumber == null) {
+      return app
+        .tell('The flight ${flightNumber} will arrive at ${Date} to ${Airport}');
+    } else {
+      return app
+        .tell('You will arrive at ${airport} by ${Date}.');
+    }
   }
 
   public flightDeparture(app: any) {
+    const flightNumber = app.getArgument(flightNumberArg);
+    if(flightNumber == null) {
+      return app
+        .tell('The flight ${flightNumber} leaves at ${Date} from ${Airport}');
+    } else {
+      return app
+        .tell('Your next flight to ${Airport} leaves at ${Date}.');
+    }
   }
 
   public flightInformation(app: any) {
     const flightNumber = app.getArgument(flightNumberArg);
+
     if(flightNumber == null) {
+      return app
+        .tell('The flight ${flightNumber} will leave from ${departAirport} at ${departTime} and arrive on ${arrivalDate} at the ${arrivalAirport}.');
+      // GET FLIGHT NUMBER 
     } else {
+      return app
+        .tell('Found it! ${tag}\'s flight will leave from ${departAirport} at ${departTime} and arrive on ${arrivalDate} at the ${arrivalAirport}.');
+      // GET USER'S NEXT FLIGHT
     }
   }
 }
