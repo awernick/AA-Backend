@@ -92,6 +92,10 @@ class GoogleAssistantHook {
             const destination = flight.destination;
             const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
             const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
+            if (!flightNumber) {
+                return app
+                    .tell(`Your next flight will arrive at ${arrivalTime} to ${destination}`);
+            }
             return app
                 .tell(`The flight AA${flightNumber} will arrive at ${arrivalTime} to ${destination}`);
         })
@@ -108,6 +112,10 @@ class GoogleAssistantHook {
             .then((flight) => {
             const destination = flight.destination;
             const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
+            if (!flightNumber) {
+                return app
+                    .tell(`Your next flight leaves at ${departureTime} from ${destination}`);
+            }
             return app
                 .tell(`The flight AA${flightNumber} leaves at ${departureTime} from ${destination}`);
         })
@@ -126,6 +134,10 @@ class GoogleAssistantHook {
             const destination = flight.destination;
             const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
             const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
+            if (!flightNumber) {
+                return app
+                    .tell(`Your next flight will leave from ${origin} at ${destination} and arrive on ${arrivalTime} at the ${destination}.`);
+            }
             return app
                 .tell(`The flight ${flightNumber} will leave from ${origin} at ${destination} and arrive on ${arrivalTime} at the ${destination}.`);
         })
