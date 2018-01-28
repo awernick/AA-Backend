@@ -5,10 +5,14 @@ const api_1 = require("./api");
 const hook_1 = require("./hook");
 const bodyparser = require("body-parser");
 const firebase = require("./helpers/firebase.helper");
+const http = require("http");
+const ws = require("ws");
 const port = process.env.PORT || 3000;
 const app = express();
 const api = new api_1.Api();
 const hook = new hook_1.GoogleAssistantHook();
+const server = http.createServer(app);
+const wss = new ws.Server({ server });
 // Database
 app.use((req, res, next) => {
     res.locals.db = firebase.getInstance().database();
@@ -33,7 +37,28 @@ app.use(bodyparser.json());
 app.use('/', api.router);
 app.use('/hook', hook.router);
 app.use('/migrate', firebase.migrateUser);
-app.listen(port, () => {
+wss.on('connection', function connection(ws, req) {
+    ws.on('message', function incoming(data) {
+        // Broadcast to everyone else.
+        console.log("Incoming msg: ", data);
+        wss.clients.forEach(function each(client) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(data);
+            }
+        });
+    });
+    //ws.on('message', function incoming(data) {
+    //  let msg:any = data.valueOf();
+    //  switch(msg.type) {
+    //    case 'order':
+    //      // SEND TO EVERYONE
+    //    default:
+    //      console.log("Unable to handle type: " + msg.type);
+    //  }
+    //});
+    ws.send('something');
+});
+server.listen(port, () => {
     firebase.setup();
     console.log(`AA Backend started on port ${port}`);
 });
