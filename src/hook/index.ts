@@ -189,11 +189,7 @@ class GoogleAssistantHook {
             return resolve(flightNumber);
           })
       } else {
-        let numParts = flightNumber.split(' ');
-        if(numParts.length == 1) {
-          return resolve(flightNumber);
-        }
-        return resolve(numParts[1]);
+        return resolve(flightNumber);
       }
     })
       .then((flightNumber: string) => {
