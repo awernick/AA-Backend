@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const http = require("request");
+const async = require("async");
+const config = require("../config");
 const { DialogflowApp } = require('actions-on-google');
 const flightNumberArg = 'flight-number';
 const givenNameArg = 'given-name';
@@ -68,7 +71,7 @@ class GoogleAssistantHook {
                 const flightNumber = record.val().flightNumber;
                 this.findFlightByNumber(res.locals, flightNumber)
                     .then((flight) => {
-                    const origin = flight.origin;
+                    const origin = flight.origin.name + " airport";
                     const destination = flight.destination;
                     const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
                     const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
@@ -88,8 +91,8 @@ class GoogleAssistantHook {
         let flightNumber = app.getArgument(flightNumberArg);
         this.loadFlight(res.locals, flightNumber)
             .then((flight) => {
-            const origin = flight.origin;
-            const destination = flight.destination;
+            const origin = flight.origin.name + " airport";
+            const destination = flight.destination.name + " airport";
             const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
             const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
             if (!flightNumber) {
@@ -97,7 +100,7 @@ class GoogleAssistantHook {
                     .tell(`Your next flight will arrive at ${arrivalTime} to ${destination}`);
             }
             return app
-                .tell(`The flight AA${flightNumber} will arrive at ${arrivalTime} to ${destination}`);
+                .tell(`The flight ${flightNumber} will arrive at ${arrivalTime} to ${destination}`);
         })
             .catch(() => {
             return app
@@ -110,14 +113,14 @@ class GoogleAssistantHook {
         const flightNumber = app.getArgument(flightNumberArg);
         this.loadFlight(res.locals, flightNumber)
             .then((flight) => {
-            const destination = flight.destination;
+            const destination = flight.destination.name + " airport";
             const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
             if (!flightNumber) {
                 return app
                     .tell(`Your next flight leaves at ${departureTime} from ${destination}`);
             }
             return app
-                .tell(`The flight AA${flightNumber} leaves at ${departureTime} from ${destination}`);
+                .tell(`The flight ${flightNumber} leaves at ${departureTime} from ${destination}`);
         })
             .catch(() => {
             return app
@@ -130,8 +133,8 @@ class GoogleAssistantHook {
         const flightNumber = app.getArgument(flightNumberArg);
         this.loadFlight(res.locals, flightNumber)
             .then((flight) => {
-            const origin = flight.origin;
-            const destination = flight.destination;
+            const origin = flight.origin.name + " airport";
+            const destination = flight.destination.name + " airport";
             const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
             const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
             if (!flightNumber) {
@@ -167,8 +170,36 @@ class GoogleAssistantHook {
             }
         })
             .then((flightNumber) => {
-            console.log(flightNumber);
             return this.findFlightByNumber(locals, flightNumber);
+        })
+            .then((flight) => {
+            return new Promise((resolve, reject) => {
+                var tasks = [];
+                tasks[0] = (cb) => {
+                    this.getAirport(flight.destination)
+                        .then((airport) => {
+                        flight.destination = airport;
+                        cb(null);
+                    })
+                        .catch(() => cb(new Error()));
+                };
+                tasks[1] = (cb) => {
+                    this.getAirport(flight.origin)
+                        .then((airport) => {
+                        flight.origin = airport;
+                        cb(null);
+                    })
+                        .catch(() => {
+                        cb(new Error());
+                    });
+                };
+                return async.parallel(tasks, (err, _) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(flight);
+                });
+            });
         });
     }
     findFlightByNumber(locals, flightNumber) {
@@ -212,6 +243,27 @@ class GoogleAssistantHook {
                     flights.push(flight);
                 });
                 return resolve(flights);
+            });
+        });
+    }
+    getAirport(code) {
+        let options = {
+            url: config.engineUrl + '/airports',
+            qs: { code },
+            method: 'GET',
+            json: true
+        };
+        return new Promise((resolve, reject) => {
+            http.get(options, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+                else if (res.statusCode == 200) {
+                    return resolve(res.body[0]);
+                }
+                else {
+                    return reject(res.statusCode);
+                }
             });
         });
     }
