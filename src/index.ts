@@ -61,8 +61,6 @@ wss.on('connection', function connection(ws, req) {
   //      console.log("Unable to handle type: " + msg.type);
   //  }
   //});
-
-  ws.send('something');
 });
 
 server.listen(port, () => {
