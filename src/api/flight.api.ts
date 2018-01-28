@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import * as http from "request";
 import * as config from "../config";
 import * as qs from "querystring";
+import * as firebase from "firebase-admin";
 
 const paths = {
   index: '/flights',
@@ -14,20 +15,33 @@ const paths = {
 }
 
 export function index(req: Request, res: Response) {
-  const options = {
-    url: config.engineUrl + paths.index,
-    qs: req.query,
-  }
+  const user = res.locals.user;
+  const db: firebase.database.Database = res.locals.db;
 
-  http.get(options, (err, response) => {
-    if(err) {
-      return res.sendStatus(500);
-    }
-    
-    return res
-      .status(response.statusCode)
-      .send(response.body);
-  });
+  db.ref('users/'+user.uid+'/flights').once('value', (records) => {
+    let flights: any[] = [];
+    records.forEach((flightRecord) => {
+      const flight = flightRecord.val();
+      if(flight == null) { return false }
+      flights.push(flight);
+    })
+    return res.json(flights)
+  })
+
+  //const options = {
+  //  url: config.engineUrl + paths.index,
+  //  qs: req.query,
+  //}
+
+  //http.get(options, (err, response) => {
+  //  if(err) {
+  //    return res.sendStatus(500);
+  //  }
+  //  
+  //  return res
+  //    .status(response.statusCode)
+  //    .send(response.body);
+  //});
 }
 
 export function show(req: Request, res: Response) {

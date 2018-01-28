@@ -9,7 +9,6 @@ var port = process.env.PORT || 3000;
 var app = express();
 var api = new api_1.Api();
 var hook = new hook_1.GoogleAssistantHook();
-app.use(bodyparser.json());
 // Database
 app.use(function (req, res, next) {
     res.locals.db = firebase.getInstance().database();
@@ -30,6 +29,7 @@ app.use('/', function (req, res, next) {
     next();
 });
 // Routes
+app.use(bodyparser.json());
 app.use('/', api.router);
 app.use('/hook', hook.router);
 app.use('/migrate', firebase.migrateUser);

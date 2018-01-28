@@ -11,18 +11,32 @@ var paths = {
     status: '/flightStatus'
 };
 function index(req, res) {
-    var options = {
-        url: config.engineUrl + paths.index,
-        qs: req.query,
-    };
-    http.get(options, function (err, response) {
-        if (err) {
-            return res.sendStatus(500);
-        }
-        return res
-            .status(response.statusCode)
-            .send(response.body);
+    var user = res.locals.user;
+    var db = res.locals.db;
+    db.ref('users/' + user.uid + '/flights').once('value', function (records) {
+        var flights = [];
+        records.forEach(function (flightRecord) {
+            var flight = flightRecord.val();
+            if (flight == null) {
+                return false;
+            }
+            flights.push(flight);
+        });
+        return res.json(flights);
     });
+    //const options = {
+    //  url: config.engineUrl + paths.index,
+    //  qs: req.query,
+    //}
+    //http.get(options, (err, response) => {
+    //  if(err) {
+    //    return res.sendStatus(500);
+    //  }
+    //  
+    //  return res
+    //    .status(response.statusCode)
+    //    .send(response.body);
+    //});
 }
 exports.index = index;
 function show(req, res) {
