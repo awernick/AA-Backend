@@ -102,28 +102,39 @@ class GoogleAssistantHook {
   public flightArrival(req: Request, res: Response) {
     const app: any = res.locals.app;
     const db: firebase.database.Database = res.locals.db;
-    const flightNumber = app.getArgument(flightNumberArg);
+    let flightNumber = app.getArgument(flightNumberArg);
 
-    if(flightNumber == null) {
-      return app
-        .tell('The flight ${flightNumber} will arrive at ${Date} to ${Airport}');
-    } else {
-      return app
-        .tell('You will arrive at ${airport} by ${Date}.');
-    }
+    this.loadFlight(res.locals, flightNumber)
+      .then((flight: any) => {
+        const origin = flight.origin
+        const destination = flight.destination;
+        const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
+        const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
+        return app
+          .tell(`The flight AA${flightNumber} will arrive at ${arrivalTime} to ${destination}`);
+      })
+      .catch(() => {
+        return app
+          .tell("Sorry, I couldn't find your flight. Please make sure the flight number is correct");
+      })
   }
 
   public flightDeparture(req: Request, res: Response) {
     const app: any = res.locals.app;
     const db: firebase.database.Database = res.locals.db;
     const flightNumber = app.getArgument(flightNumberArg);
-    if(flightNumber == null) {
-      return app
-        .tell('The flight ${flightNumber} leaves at ${Date} from ${Airport}');
-    } else {
-      return app
-        .tell('Your next flight to ${Airport} leaves at ${Date}.');
-    }
+
+    this.loadFlight(res.locals, flightNumber)
+      .then((flight: any) => {
+        const destination = flight.destination;
+        const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
+        return app
+          .tell(`The flight AA${flightNumber} leaves at ${departureTime} from ${destination}`);
+      })
+      .catch(() => {
+        return app
+          .tell("Sorry, I couldn't find your flight. Please make sure the flight number is correct");
+      })
   }
 
   public flightInformation(req: Request, res: Response) {
@@ -131,15 +142,46 @@ class GoogleAssistantHook {
     const db: firebase.database.Database = res.locals.db;
     const flightNumber = app.getArgument(flightNumberArg);
 
-    if(flightNumber == null) {
-      return app
-        .tell('The flight ${flightNumber} will leave from ${departAirport} at ${departTime} and arrive on ${arrivalDate} at the ${arrivalAirport}.');
-      // GET FLIGHT NUMBER 
-    } else {
-      return app
-        .tell('Found it! ${tag}\'s flight will leave from ${departAirport} at ${departTime} and arrive on ${arrivalDate} at the ${arrivalAirport}.');
-      // GET USER'S NEXT FLIGHT
-    }
+    this.loadFlight(res.locals, flightNumber)
+      .then((flight: any) => {
+        const origin = flight.origin
+        const destination = flight.destination;
+        const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
+        const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
+
+        return app
+        .tell(`The flight ${flightNumber} will leave from ${origin} at ${destination} and arrive on ${arrivalTime} at the ${destination}.`);
+      })
+      .catch(() => {
+        return app
+          .tell("Sorry, I couldn't find your flight. Please make sure the flight number is correct");
+      })
+  }
+
+  private loadFlight(locals: any, flightNumber?: string) {
+    return new Promise((resolve, reject) => {
+      if(!flightNumber) {
+        this.loadFlights(locals)
+          .then((flights: Array<any>) => {
+            if(flights.length == 0) {
+              return reject();
+            }
+
+            flightNumber = flights[0].flightNumber
+            return resolve(flightNumber);
+          })
+      } else {
+        let numParts = flightNumber.split(' ');
+        if(numParts.length == 1) {
+          return resolve(flightNumber);
+        }
+        return resolve(numParts[1]);
+      }
+    })
+      .then((flightNumber: string) => {
+        console.log(flightNumber);
+        return this.findFlightByNumber(locals, flightNumber)
+      })
   }
 
 
@@ -160,12 +202,29 @@ class GoogleAssistantHook {
           }
           else { return false }
         })
-
-        if(found) { return }
+        if(found) { return; }
         return reject();
       })
     })
   }
+
+  private loadFlights(locals: any) {
+    const user = locals.user;
+    const db: firebase.database.Database = locals.db;
+
+    return new Promise((resolve, reject) => {
+      db.ref('users/'+user.uid+'/flights').once('value', (records) => {
+        let flights: any[] = [];
+        records.forEach((flightRecord) => {
+          const flight = flightRecord.val();
+          if(flight == null) { return false }
+          flights.push(flight);
+        })
+        return resolve(flights);
+      })
+    })
+  }
 }
+
 
 export { GoogleAssistantHook };
