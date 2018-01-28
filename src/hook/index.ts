@@ -4,6 +4,7 @@ import * as http from "request";
 import * as firebase from "firebase";
 import * as async from "async";
 import * as config from "../config";
+import * as moment from "moment";
 
 const { DialogflowApp } = require('actions-on-google');
 
@@ -88,11 +89,13 @@ class GoogleAssistantHook {
             .then((flight:any) => {
               const origin = flight.origin.name + " airport";
               const destination = flight.destination.name + " airport";
-              const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
-              const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
+              const departureTimeMoment = moment(flight.departureTime);
+              const departureTime = departureTimeMoment.format('LL') + ' at '+ departureTimeMoment.format('LT');
+              const arrivalTimeMoment = moment(flight.arrivalTime);
+              const arrivalTime = arrivalTimeMoment.format('LL') + ' at '+ arrivalTimeMoment.format('LT');
 
               return app
-                  .tell(`Found it! ${tag}\'s flight will leave from ${origin} at ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
+                  .tell(`Found it! ${tag}\'s flight will leave from ${origin} on ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
             })
             .catch(() => {
               return app
@@ -111,15 +114,18 @@ class GoogleAssistantHook {
       .then((flight: any) => {
         const origin = flight.origin.name + " airport";
         const destination = flight.destination.name + " airport"
-        const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
-        const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
+
+        const departureTimeMoment = moment(flight.departureTime);
+        const departureTime = departureTimeMoment.format('LL') + ' at '+ departureTimeMoment.format('LT');
+        const arrivalTimeMoment = moment(flight.arrivalTime);
+        const arrivalTime = arrivalTimeMoment.format('LL') + ' at '+ arrivalTimeMoment.format('LT');
 
         if(!flightNumber) {
           return app
-            .tell(`Your next flight will arrive at ${arrivalTime} to ${destination}`);
+            .tell(`Your next flight will arrive on ${arrivalTime} to ${destination}`);
         }
         return app
-          .tell(`The flight ${flightNumber} will arrive at ${arrivalTime} to ${destination}`);
+          .tell(`The flight ${flightNumber} will arrive on ${arrivalTime} to ${destination}`);
       })
       .catch(() => {
         return app
@@ -135,15 +141,18 @@ class GoogleAssistantHook {
     this.loadFlight(res.locals, flightNumber)
       .then((flight: any) => {
         const destination = flight.destination.name + " airport";
-        const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
+        const departureTimeMoment = moment(flight.departureTime);
+        const departureTime = departureTimeMoment.format('LL') + ' at '+ departureTimeMoment.format('LT');
+        const arrivalTimeMoment = moment(flight.arrivalTime);
+        const arrivalTime = arrivalTimeMoment.format('LL') + ' at '+ arrivalTimeMoment.format('LT');
 
         if(!flightNumber) {
           return app
-            .tell(`Your next flight leaves at ${departureTime} from ${destination}`);
+            .tell(`Your next flight leaves on ${departureTime} from ${destination}`);
         }
 
         return app
-          .tell(`The flight ${flightNumber} leaves at ${departureTime} from ${destination}`);
+          .tell(`The flight ${flightNumber} leaves on ${departureTime} from ${destination}`);
       })
       .catch(() => {
         return app
@@ -160,15 +169,17 @@ class GoogleAssistantHook {
       .then((flight: any) => {
         const origin = flight.origin.name + " airport";
         const destination = flight.destination.name + " airport";
-        const departureTime = new Date(flight.departureTime).toLocaleString('en-US');
-        const arrivalTime = new Date(flight.arrivalTime).toLocaleString('en-US');
+        const departureTimeMoment = moment(flight.departureTime);
+        const departureTime = departureTimeMoment.format('LL') + ' at '+ departureTimeMoment.format('LT');
+        const arrivalTimeMoment = moment(flight.arrivalTime);
+        const arrivalTime = arrivalTimeMoment.format('LL') + ' at '+ arrivalTimeMoment.format('LT');
 
         if(!flightNumber) {
           return app
-            .tell(`Your next flight will leave from ${origin} at ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
+            .tell(`Your next flight will leave from ${origin} on ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
         }
           return app
-            .tell(`The flight ${flightNumber} will leave from ${origin} at ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
+            .tell(`The flight ${flightNumber} will leave from ${origin} on ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
       })
       .catch(() => {
         return app
@@ -219,7 +230,9 @@ class GoogleAssistantHook {
           }
 
           return async.parallel(tasks, (err, _) => {
-            if(err) { return reject(err) }
+            if(err) { 
+              return reject(err) 
+            }
             return resolve(flight)
           });
         })

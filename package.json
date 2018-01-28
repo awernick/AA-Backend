@@ -29,6 +29,7 @@
     "firebase": "^4.9.0",
     "firebase-admin": "^5.8.1",
     "lodash": "^4.17.4",
+    "moment": "^2.20.1",
     "request": "^2.83.0",
     "typescript": "^2.6.2",
     "ws": "^4.0.0"
