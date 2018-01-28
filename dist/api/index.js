@@ -6,6 +6,7 @@ var FlightApi = require("./flight.api");
 var OrderApi = require("./order.api");
 var ReservationApi = require("./reservation.api");
 var AirportApi = require("./airport.api");
+var ItemsApi = require("./items.api");
 var Api = /** @class */ (function () {
     function Api() {
         this.router = express_1.Router();
@@ -30,6 +31,8 @@ var Api = /** @class */ (function () {
         this.router.get('/order', OrderApi.show);
         this.router.post('/order', OrderApi.create);
         this.router.get('/orders', OrderApi.index);
+        // Items
+        this.router.get('/items', ItemsApi.index);
     };
     return Api;
 }());

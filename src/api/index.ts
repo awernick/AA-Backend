@@ -4,6 +4,7 @@ import * as FlightApi from "./flight.api";
 import * as OrderApi from "./order.api";
 import * as ReservationApi from "./reservation.api"
 import * as AirportApi from "./airport.api";
+import * as ItemsApi from "./items.api";
 
 class Api {
   public router: Router;
@@ -37,6 +38,9 @@ class Api {
     this.router.get('/order', OrderApi.show);
     this.router.post('/order', OrderApi.create);
     this.router.get('/orders', OrderApi.index);
+
+    // Items
+    this.router.get('/items', ItemsApi.index);
   }
 }
 
