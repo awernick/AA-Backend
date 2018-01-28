@@ -3,20 +3,20 @@
 // flight.api
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-var http = require("request");
-var config = require("../config");
-var paths = {
+const http = require("request");
+const config = require("../config");
+const paths = {
     index: '/flights',
     show: '/flight',
     status: '/flightStatus'
 };
 function index(req, res) {
-    var user = res.locals.user;
-    var db = res.locals.db;
-    db.ref('users/' + user.uid + '/flights').once('value', function (records) {
-        var flights = [];
-        records.forEach(function (flightRecord) {
-            var flight = flightRecord.val();
+    const user = res.locals.user;
+    const db = res.locals.db;
+    db.ref('users/' + user.uid + '/flights').once('value', (records) => {
+        let flights = [];
+        records.forEach((flightRecord) => {
+            const flight = flightRecord.val();
             if (flight == null) {
                 return false;
             }
@@ -40,11 +40,11 @@ function index(req, res) {
 }
 exports.index = index;
 function show(req, res) {
-    var options = {
+    const options = {
         url: config.engineUrl + paths.show,
         qs: req.query,
     };
-    http.get(options, function (err, response) {
+    http.get(options, (err, response) => {
         if (err) {
             return res.sendStatus(500);
         }
@@ -55,7 +55,7 @@ function show(req, res) {
 }
 exports.show = show;
 function status(req, res) {
-    http.get(config.engineUrl + paths.status, function () {
+    http.get(config.engineUrl + paths.status, () => {
     });
 }
 exports.status = status;
