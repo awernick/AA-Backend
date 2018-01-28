@@ -10,5 +10,9 @@ var api = new api_1.Api();
 var hook = new hook_1.GoogleAssistantHook();
 app.use(bodyparser.json());
 app.use('/', api.router);
+app.use('/', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+});
 app.use('/hook', hook.router);
 app.listen(port, function () { return console.log("AA Backend started on port " + port); });
