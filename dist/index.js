@@ -42,7 +42,7 @@ wss.on('connection', function connection(ws, req) {
         // Broadcast to everyone else.
         console.log("Incoming msg: ", data);
         wss.clients.forEach(function each(client) {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
+            if (client !== ws && client.readyState === ws.OPEN) {
                 client.send(data);
             }
         });
@@ -56,7 +56,6 @@ wss.on('connection', function connection(ws, req) {
     //      console.log("Unable to handle type: " + msg.type);
     //  }
     //});
-    ws.send('something');
 });
 server.listen(port, () => {
     firebase.setup();
