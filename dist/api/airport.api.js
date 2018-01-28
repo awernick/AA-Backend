@@ -11,7 +11,7 @@ var paths = {
 function index(req, res) {
     var options = {
         url: config.engineUrl + paths.index,
-        qs: req.query,
+        qs: req.query
     };
     http.get(options, function (err, response) {
         if (err) {
