@@ -162,10 +162,10 @@ class GoogleAssistantHook {
 
         if(!flightNumber) {
           return app
-            .tell(`Your next flight will leave from ${origin} at ${destination} and arrive on ${arrivalTime} at the ${destination}.`);
+            .tell(`Your next flight will leave from ${origin} at ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
         }
           return app
-            .tell(`The flight ${flightNumber} will leave from ${origin} at ${destination} and arrive on ${arrivalTime} at the ${destination}.`);
+            .tell(`The flight ${flightNumber} will leave from ${origin} at ${departureTime} and arrive on ${arrivalTime} at the ${destination}.`);
       })
       .catch(() => {
         return app
