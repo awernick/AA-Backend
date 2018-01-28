@@ -9,14 +9,6 @@ const app = express();
 const api = new Api();
 const hook = new GoogleAssistantHook();
 
-app.use('/', (req, res, next) => {
-  // CORS
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-})
-app.use(bodyparser.json());
-
 // Database
 app.use((req, res, next) => {
   res.locals.db = firebase.getInstance().database();
@@ -32,7 +24,15 @@ app.use((req, res, next) => {
   next();
 })
 
+// CORS
+app.use('/', (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
+
 // Routes
+app.use(bodyparser.json());
 app.use('/', api.router);
 app.use('/hook', hook.router);
 app.use('/migrate', firebase.migrateUser);

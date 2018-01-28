@@ -9,12 +9,6 @@ var port = process.env.PORT || 3000;
 var app = express();
 var api = new api_1.Api();
 var hook = new hook_1.GoogleAssistantHook();
-app.use('/', function (req, res, next) {
-    // CORS
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
 app.use(bodyparser.json());
 // Database
 app.use(function (req, res, next) {
@@ -27,6 +21,12 @@ app.use(function (req, res, next) {
         email: 'alanwernick242@gmail.com',
         uid: '-L3vh6rdAC374-8t13oA'
     };
+    next();
+});
+// CORS
+app.use('/', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
 // Routes
